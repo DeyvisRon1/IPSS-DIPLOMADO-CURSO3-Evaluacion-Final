@@ -1,0 +1,8 @@
+# Dependencias — se regeneran con npm install.
+node_modules/
+
+# Variables de entorno (por si las usas).
+.env
+.env.local
+
+.DS_Store
