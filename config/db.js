@@ -1,18 +1,19 @@
 import mongoose from 'mongoose'
+import dns from 'node:dns'
+import 'dotenv/config'
 
-// ---------------------------------------------------------------------------
-// CONFIG — conexión a MongoDB.
-// ---------------------------------------------------------------------------
-// ⚠️ Reemplaza usuario-mongo y clave-secreta por los de TU cluster de Atlas.
-//    (Atlas → Connect → Drivers → copia la cadena, pon tu usuario y contraseña.)
-//
-// ⚠️ Tu repo es PÚBLICO: no subas tu contraseña real. Deja los marcadores, o
-//    apunta a una base local. Nadie debe poder entrar a tu base desde tu repo.
+dns.setServers(['8.8.8.8', '8.8.4.4'])
 
-const MONGODB_URI =
-  'mongodb+srv://usuario-mongo:clave-secreta@cluster0.xxxxx.mongodb.net/plataforma'
+const MONGODB_URI = process.env.MONGODB_URI
 
 export const conectar = async () => {
-  await mongoose.connect(MONGODB_URI)
-  console.log(`🍃 conectado a MongoDB → base "${mongoose.connection.name}"`)
+  try {
+    await mongoose.connect(MONGODB_URI)
+
+    console.log(
+      `🍃 conectado a MongoDB → base "${mongoose.connection.name}"`
+    )
+  } catch (error) {
+    console.error('❌ Error conectando a MongoDB:', error.message)
+  }
 }
