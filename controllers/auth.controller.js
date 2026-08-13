@@ -9,6 +9,10 @@ import * as service from '../services/auth.service.js'
 // POST /api/auth/registro/profesor
 export const registrarProfesor = async (req, res) => {
   try {
+    const resultado = await service.registrarProfesor(req.body)
+
+    res.status(201).json(resultado)
+
     // TODO: llama al service para crear el profesor (con la password hasheada)
     //       y devuelve su token. Status 201.
     //       Recuerda: NO devuelvas la password en la respuesta.
@@ -20,6 +24,9 @@ export const registrarProfesor = async (req, res) => {
 // POST /api/auth/registro/alumno
 export const registrarAlumno = async (req, res) => {
   try {
+    const resultado = await service.registrarAlumno(req.body)
+
+    res.status(201).json(resultado)
     // TODO: igual que el profesor, pero para el alumno.
   } catch (error) {
     res.status(400).json({ error: error.message })
@@ -29,6 +36,18 @@ export const registrarAlumno = async (req, res) => {
 // POST /api/auth/login
 export const login = async (req, res) => {
   try {
+
+    const { email, password } = req.body
+
+    const resultado = await service.login(email, password)
+
+    if (!resultado) {
+      return res.status(401).json({
+        error: 'Credenciales Invalidas',
+      })
+    }
+
+    res.status(200).json(resultado)
     // TODO:
     //   1. Recibe email y password del body.
     //   2. Busca al usuario (¿profesor o alumno? decide cómo lo resuelves).
