@@ -37,37 +37,78 @@ export const crear = async (req, res) => {
 // PUT /api/cursos/:id — edita un curso.
 export const editar = async (req, res) => {
   try {
-    const curso = await service.editarCurso(req.params.id, req.body)
+    const cursoExistente = await service.buscarCurso(req.params.id)
 
-    if (!curso) {
-      return res.status(404).json({
-        error: 'Curso no encontrado'
-      })
-    }
-    // TODO: edita el curso. Si no existe → 404.
-    res.status(200).json(curso)
-  } catch (error) {
-    res.status(400).json({ error: error.message })
-  }
-}
-
-// DELETE /api/cursos/:id — borra un curso.
-export const borrar = async (req, res) => {
-  try {
-    // TODO: borra el curso. Si no existe → 404.
-    const curso = await service.borrarCurso(req.params.id)
-
-    if (!curso) {
+    if (!cursoExistente) {
       return res.status(404).json({
         error: 'Curso no encontrado',
       })
     }
 
+    if (!cursoExistente.profesor) {
+      return res.status(403).json({
+        error: 'El curso no tiene profesor asignado',
+      })
+    }
+
+    const profesorId = cursoExistente.profesor._id
+      ? cursoExistente.profesor._id.toString()
+      : cursoExistente.profesor.toString()
+
+    if (profesorId !== req.usuario.id) {
+      return res.status(403).json({
+        error: 'No tienes permiso para editar este curso',
+      })
+    }
+
+    const curso = await service.editarCurso(
+      req.params.id,
+      req.body,
+    )
+
+    res.status(200).json(curso)
+  } catch (error) {
+    res.status(400).json({
+      error: error.message,
+    })
+  }
+}
+// DELETE /api/cursos/:id — borra un curso.
+export const borrar = async (req, res) => {
+  try {
+    const cursoExistente = await service.buscarCurso(req.params.id)
+
+    if (!cursoExistente) {
+      return res.status(404).json({
+        error: 'Curso no encontrado',
+      })
+    }
+
+    if (!cursoExistente.profesor) {
+      return res.status(403).json({
+        error: 'El curso no tiene profesor asignado',
+      })
+    }
+
+    const profesorId = cursoExistente.profesor._id
+      ? cursoExistente.profesor._id.toString()
+      : cursoExistente.profesor.toString()
+
+    if (profesorId !== req.usuario.id) {
+      return res.status(403).json({
+        error: 'No tienes permiso para borrar este curso',
+      })
+    }
+
+    await service.borrarCurso(req.params.id)
+
     res.status(200).json({
       mensaje: 'Curso eliminado correctamente',
     })
   } catch (error) {
-    res.status(400).json({ error: error.message })
+    res.status(400).json({
+      error: error.message,
+    })
   }
 }
 
