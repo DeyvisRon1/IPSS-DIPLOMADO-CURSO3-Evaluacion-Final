@@ -26,11 +26,6 @@ const cursoSchema = new mongoose.Schema(
 
     fechaInicio: {
       type: Date,
-      required:true,
-    },
-
-    fechaTermino: {
-      Type: Date,
       required: true,
     },
 
@@ -41,18 +36,17 @@ const cursoSchema = new mongoose.Schema(
 
     estado: {
       type: String,
-      enum: ['EN_MATRICULA', 'cerrado'],
+      enum: ['EN_MATRICULA', 'CERRADO'],
       default: 'EN_MATRICULA',
     },
-    
+
     profesor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Profesor',
-      defaul: null,
+      default: null,
     },
 
     alumnos: [
-
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Alumno',
